@@ -1,0 +1,21 @@
+name: sys-benches
+
+services:
+  m365-bench:
+    image: m365-bench:${USER:-brett}
+    container_name: m365-bench
+    command: sleep infinity
+    volumes:
+      # Mount full host home directory
+      - ~:/home/${USER:-brett}:cached
+      # Azure CLI config may be symlinked outside the mounted home directory
+      # on WSL/Windows hosts. Override AZURE_CONFIG_HOST_PATH if needed.
+      - ${AZURE_CONFIG_HOST_PATH:-~/.azure}:/home/${USER:-brett}/.azure:cached
+      - .:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /workspace
+    environment:
+      - USER=${USER:-brett}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    privileged: true
+    network_mode: host

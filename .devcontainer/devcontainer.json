@@ -1,0 +1,31 @@
+{
+  "name": "365Bench",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "m365-bench",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "${localEnv:USER}",
+  "updateRemoteUserUID": false,
+  "containerEnv": {
+    "DOCKER_HOST": "unix:///var/run/docker.sock"
+  },
+  "initializeCommand": "sh -c 'docker image inspect m365-bench:$(id -un) >/dev/null 2>&1 || ./build-layer.sh'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.powershell",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "timonwong.shellcheck",
+        "humao.rest-client",
+        "ms-vscode-remote.remote-ssh",
+        "github.copilot",
+        "github.copilot-chat",
+        "openai.chatgpt",
+        "anthropic.claude-code",
+        "Google.geminicodeassist",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "features": {}
+}

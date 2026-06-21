@@ -1,0 +1,21 @@
+{
+  "name": "sysBenches / 365Bench",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "m365-bench",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "${localEnv:USER}",
+  "updateRemoteUserUID": false,
+  "containerEnv": {
+    "DOCKER_HOST": "unix:///var/run/docker.sock"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.powershell",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "features": {}
+}

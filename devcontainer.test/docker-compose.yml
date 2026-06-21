@@ -1,0 +1,9 @@
+name: m365-bench-test
+
+services:
+  test:
+    image: m365-bench:latest
+    command: sleep infinity
+    volumes:
+      - .:/test
+    working_dir: /test
