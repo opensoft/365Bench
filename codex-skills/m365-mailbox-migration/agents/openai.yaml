@@ -1,0 +1,4 @@
+interface:
+  display_name: "M365 Mailbox Migration"
+  short_description: "Plan and run tenant-to-tenant mailbox moves"
+  default_prompt: "Use $m365-mailbox-migration to prepare a Microsoft 365 cross-tenant mailbox migration runbook."

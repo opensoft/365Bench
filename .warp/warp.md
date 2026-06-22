@@ -26,6 +26,14 @@ Linux-only, cross-platform Microsoft admin tooling:
 - Windows-only modules (`MSOnline`, `AzureAD`, SharePoint Online Management Shell) are
   intentionally excluded — they cannot run on Linux. Use Graph/Entra/PnP equivalents.
 
+## Codex skill wiring
+- Bundled skill: `codex-skills/m365-mailbox-migration`
+- Install helper: `./install-codex-skills.sh`
+- Installed destination: `${CODEX_HOME:-$HOME/.codex}/skills/m365-mailbox-migration`
+- Purpose: guide Exchange Online cross-tenant mailbox migration planning, target
+  MailUser preparation, readiness validation, migration batch sequencing, and
+  post-migration checks.
+
 ## Install scripts
 - `install-365-tools-minimal.sh` — core set baked into the image (used by `Dockerfile.layer2`)
 - `install-365-tools.sh` — full set = minimal + Power Platform CLI (`pac`) + beta modules

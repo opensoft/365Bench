@@ -75,6 +75,24 @@ az login                             # Azure CLI (Entra)
 ```
 The container mounts your host home directory, so tokens persist between sessions.
 
+## Codex Skills
+
+This bench includes a Codex skill for Microsoft 365 cross-tenant mailbox migration:
+
+- `m365-mailbox-migration` — workflow guidance for Exchange Online tenant-to-tenant
+  mailbox moves, source attribute export, target MailUser preparation, endpoint
+  readiness checks, migration batch sequencing, and post-migration validation.
+
+Install or refresh the bundled skill into your Codex home:
+
+```bash
+./install-codex-skills.sh
+```
+
+The skill is stored in `codex-skills/m365-mailbox-migration` so it travels with
+`365Bench`, while installation copies it to `${CODEX_HOME:-$HOME/.codex}/skills`
+for normal Codex discovery.
+
 ## Not Included (and why)
 These are **Windows-only** and cannot run in a Linux container:
 - **MSOnline** and **AzureAD** — legacy and deprecated; superseded by `Microsoft.Graph` / `Microsoft.Entra`.
