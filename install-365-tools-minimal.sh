@@ -71,6 +71,13 @@ npm install -g @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (
 command -v m365 >/dev/null 2>&1 && m365 --version || true
 
 # ----------------------------------------
+# Microsoft Teams CLI (teams, preview npm package)
+# ----------------------------------------
+echo "Installing Microsoft Teams CLI (@microsoft/teams.cli@preview)..."
+npm install -g @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g @microsoft/teams.cli@preview)"
+command -v teams >/dev/null 2>&1 && teams --version || true
+
+# ----------------------------------------
 # Microsoft Graph CLI (mgc, cross-platform Go binary) — best effort
 # ----------------------------------------
 echo "Installing Microsoft Graph CLI (mgc)..."
@@ -105,4 +112,4 @@ echo "✓ Layer 2 Microsoft 365 Admin Tools Complete"
 echo "=========================================="
 echo "Installed: pwsh 7, Node.js, Microsoft.Graph, Microsoft.Entra,"
 echo "           ExchangeOnlineManagement, MicrosoftTeams, PnP.PowerShell,"
-echo "           m365 CLI, mgc (Graph CLI), az CLI"
+echo "           m365 CLI, teams CLI, mgc (Graph CLI), az CLI"

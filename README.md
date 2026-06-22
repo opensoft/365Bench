@@ -28,26 +28,39 @@ code .   # Open in VS Code and "Reopen in Container"
 ## What's Included (Layer 2)
 
 All tooling is **cross-platform** (Linux + PowerShell 7), since this is a Linux container.
+The full set is baked into the image via `install-365-tools.sh`.
 
-### Foundation
-- **PowerShell 7** (`pwsh`) — the runtime for all Microsoft admin modules
-- **Node.js LTS** — runtime for the CLI for Microsoft 365
+### Core — inherited from base layers (Layer 0/1b)
+- **git**, **curl**, **jq**, **yq**, **make** — standard utilities
+- **Node.js / npm / npx** — runtime for npm-based M365 CLIs
+- **uv / uvx** — Python manager; provides MCP server runtime
+- **python3 / pip** — scripting and pip-based tools
 
-### PowerShell admin modules
-- **Microsoft.Graph** — users, groups, licensing, devices, directory (the core)
+### Core — installed by this layer
+- **httpie** (`http`) — human-friendly HTTP client
+- **just** — command runner (Justfile support)
+- **sops** + **age** — secret encryption at rest
+- **doppler** — secret CLI for runtime secret injection
+- **.NET SDK 8** (`dotnet`) — required for `pac`
+- **csvkit** (`csvstat`, `csvcut`, etc.) — CSV processing
+- **miller** (`mlr`) — CSV / JSON / NDJSON stream processor
+
+### Optional Auth Layer
+- **Azure CLI** (`az`) — Entra ID / `az ad` operations (inherited from Layer 1b)
+- **Power Platform CLI** (`pac`) — Power Apps / Power Automate admin
+
+### Optional Compatibility Layer (PowerShell)
+- **PowerShell 7** (`pwsh`) — runtime for all Microsoft admin modules
+- **Microsoft.Graph** — users, groups, licensing, devices, directory (core)
 - **Microsoft.Entra** — Entra ID (Azure AD) administration
 - **ExchangeOnlineManagement** — Exchange Online + Security & Compliance
-- **MicrosoftTeams** — Teams administration
+- **MicrosoftTeams** — Teams administration (PowerShell)
 - **PnP.PowerShell** — SharePoint Online / OneDrive administration
 
-### Command-line tools
+### M365 CLIs
 - **CLI for Microsoft 365** (`m365`) — cross-platform M365 admin/scripting
+- **Microsoft Teams CLI** (`teams`) — Teams Toolkit CLI (preview)
 - **Microsoft Graph CLI** (`mgc`) — cross-platform Microsoft Graph access
-- **Azure CLI** (`az`) — for `az ad` (Entra) operations
-
-### Full toolset (optional)
-`install-365-tools.sh` adds **Power Platform CLI** (`pac`, needs the .NET SDK) and the
-**beta** PowerShell modules (`Microsoft.Graph.Beta`, `Microsoft.Entra.Beta`).
 
 ## Authentication
 Sign in interactively per tool (device-code / browser):

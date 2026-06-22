@@ -33,10 +33,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# MICROSOFT 365 ADMIN TOOLS (minimal core set)
+# MICROSOFT 365 ADMIN TOOLS (full set)
 # ========================================
-COPY install-365-tools-minimal.sh /tmp/
-RUN bash /tmp/install-365-tools-minimal.sh && rm /tmp/install-365-tools-minimal.sh
+COPY install-365-tools.sh /tmp/
+RUN bash /tmp/install-365-tools.sh && rm /tmp/install-365-tools.sh
 
 # ========================================
 # SHELL CONFIGURATION (into /etc/skel)
@@ -46,7 +46,8 @@ RUN bash /tmp/install-365-tools-minimal.sh && rm /tmp/install-365-tools-minimal.
 RUN echo '' >> /etc/skel/.zshrc && \
     echo '# Microsoft 365 admin aliases' >> /etc/skel/.zshrc && \
     echo 'alias m365login="m365 login"' >> /etc/skel/.zshrc && \
-    echo 'alias graphconnect="pwsh -NoLogo -Command Connect-MgGraph"' >> /etc/skel/.zshrc
+    echo 'alias graphconnect="pwsh -NoLogo -Command Connect-MgGraph"' >> /etc/skel/.zshrc && \
+    echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> /etc/skel/.zshrc
 
 # Default command
 CMD ["sleep", "infinity"]

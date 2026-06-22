@@ -31,12 +31,34 @@ echo "Layer 2 Microsoft 365 Bench Test Suite"
 echo "=========================================="
 echo
 
-echo "Foundation:"
-check "PowerShell 7 (pwsh)" "pwsh --version"
-check "Node.js" "node --version"
+echo "Core (base-inherited):"
+check "git" "git --version"
+check "jq" "jq --version"
+check "yq" "yq --version"
+check "node" "node --version"
+check "npm" "npm --version"
+check "uv" "uv --version"
+check "python3" "python3 --version"
 
 echo
-echo "PowerShell admin modules:"
+echo "Core (installed by this layer):"
+check "httpie (http)" "http --version"
+check "miller (mlr)" "mlr --version"
+check "just" "just --version"
+check "csvkit (csvstat)" "csvstat --version"
+check "sops" "sops --version"
+check "age" "age --version"
+check "doppler" "doppler --version"
+check "dotnet" "dotnet --version"
+
+echo
+echo "Auth:"
+check "Azure CLI (az)" "az version"
+echo "  ⚠ pac (Power Platform CLI) — Windows-only, skipped on Linux"
+
+echo
+echo "Compat (PowerShell 7 + modules):"
+check "PowerShell 7 (pwsh)" "pwsh --version"
 mod "Microsoft.Graph"
 mod "Microsoft.Entra"
 mod "ExchangeOnlineManagement"
@@ -44,10 +66,10 @@ mod "MicrosoftTeams"
 mod "PnP.PowerShell"
 
 echo
-echo "CLIs:"
+echo "M365 CLIs:"
 check "CLI for Microsoft 365 (m365)" "m365 --version"
+check "Microsoft Teams CLI (teams)" "teams --version"
 check "Microsoft Graph CLI (mgc)" "mgc --version"
-check "Azure CLI (az)" "az version"
 
 echo
 echo "=========================================="
