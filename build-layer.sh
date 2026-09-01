@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build Layer 2 and ensure Layer 3 (m365-bench)
+# Build the Microsoft business-apps Layer 2 and ensure Layer 3 (m365-bench)
 
 set -e
 

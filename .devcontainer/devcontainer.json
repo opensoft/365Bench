@@ -8,11 +8,13 @@
   "containerEnv": {
     "DOCKER_HOST": "unix:///var/run/docker.sock"
   },
-  "initializeCommand": "sh -c 'docker image inspect m365-bench:$(id -un) >/dev/null 2>&1 || ./build-layer.sh'",
+  "initializeCommand": "bash ${localWorkspaceFolder}/../../scripts/prepare-bench-start.sh --container m365-bench --base m365-bench:latest --user ${localEnv:USER} --project sys-benches --service m365-bench",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-vscode.powershell",
+        "microsoft-IsvExpTools.powerplatform-vscode",
+        "ms-dynamics-smb.al",
         "redhat.vscode-yaml",
         "ms-azuretools.vscode-docker",
         "timonwong.shellcheck",
@@ -24,7 +26,16 @@
         "anthropic.claude-code",
         "Google.geminicodeassist",
         "eamodio.gitlens"
-      ]
+      ],
+      "settings": {
+        "al.enableCodeAnalysis": true,
+        "al.enableCodeActions": true,
+        "al.codeAnalyzers": [
+          "${CodeCop}",
+          "${UICop}"
+        ],
+        "al.useVsCodeAuthentication": true
+      }
     }
   },
   "features": {}

@@ -5,6 +5,7 @@
   "workspaceFolder": "/workspace",
   "remoteUser": "${localEnv:USER}",
   "updateRemoteUserUID": false,
+  "initializeCommand": "bash ${localWorkspaceFolder}/../../../scripts/prepare-bench-start.sh --container m365-bench --base m365-bench:latest --user ${localEnv:USER} --project sys-benches --service m365-bench",
   "containerEnv": {
     "DOCKER_HOST": "unix:///var/run/docker.sock"
   },
@@ -12,9 +13,20 @@
     "vscode": {
       "extensions": [
         "ms-vscode.powershell",
+        "microsoft-IsvExpTools.powerplatform-vscode",
+        "ms-dynamics-smb.al",
         "redhat.vscode-yaml",
         "ms-azuretools.vscode-docker"
-      ]
+      ],
+      "settings": {
+        "al.enableCodeAnalysis": true,
+        "al.enableCodeActions": true,
+        "al.codeAnalyzers": [
+          "${CodeCop}",
+          "${UICop}"
+        ],
+        "al.useVsCodeAuthentication": true
+      }
     }
   },
   "features": {}

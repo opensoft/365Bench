@@ -124,22 +124,13 @@ fi
 pwsh --version
 
 # ----------------------------------------
-# CORE: .NET SDK 8 (required for pac)
+# DYNAMICS: Power Platform CLI + Business Central AL tooling
+# Current PAC releases require .NET 10 while stable AL tools target .NET 8.
+# The helper installs both SDKs, system-wide pac and al commands, and the
+# Business Central AL:Go templates.
 # ----------------------------------------
-if ! command -v dotnet >/dev/null 2>&1; then
-    echo "Installing .NET SDK 8..."
-    . /etc/os-release
-    # packages-microsoft-prod may already be registered from the pwsh step above
-    if ! apt-cache show dotnet-sdk-8.0 >/dev/null 2>&1; then
-        download "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
-            /tmp/packages-microsoft-prod.deb
-        dpkg -i /tmp/packages-microsoft-prod.deb
-        rm -f /tmp/packages-microsoft-prod.deb
-        apt-get -o Acquire::Retries=5 update
-    fi
-    apt-get -o Acquire::Retries=5 install -y dotnet-sdk-8.0 && rm -rf /var/lib/apt/lists/*
-fi
-dotnet --version
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/install-business-apps-tools.sh"
 
 # ----------------------------------------
 # COMPAT: PowerShell admin modules
@@ -200,14 +191,6 @@ else
 fi
 
 # ----------------------------------------
-# AUTH: Power Platform CLI (pac)
-# NOTE: Microsoft.PowerApps.CLI.Tool is Windows-only (no Linux native binary).
-# pac is not available as a standalone Linux install at this time.
-# Install on Windows/macOS: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
-# ----------------------------------------
-echo "NOTE: pac (Power Platform CLI) is Windows-only; skipping on Linux."
-
-# ----------------------------------------
 # AUTH: Azure CLI (az) — verify/install if missing
 # (already in Layer 1b; install only if absent)
 # ----------------------------------------
@@ -222,10 +205,12 @@ echo "=========================================="
 echo "✓ Layer 2 Microsoft 365 Admin Tools Complete"
 echo "=========================================="
 echo "Core (installed here):"
-echo "  httpie, just, sops, age, doppler, dotnet SDK, csvkit, miller (mlr)"
+echo "  httpie, just, sops, age, doppler, dotnet SDKs 8/10, csvkit, miller (mlr)"
 echo "Core (inherited from base layers):"
 echo "  git, jq, yq, make, node/npm/npx, uv/uvx (MCP runtime), python3/pip"
 echo "Auth:    az CLI, pac (Power Platform CLI)"
 echo "Compat:  pwsh 7, Microsoft.Graph, Microsoft.Entra,"
 echo "         ExchangeOnlineManagement, MicrosoftTeams, PnP.PowerShell"
 echo "M365:    m365 CLI, teams CLI, mgc (Graph CLI)"
+echo "D365:    pac; m365 pp/pa/flow command groups"
+echo "MSBC:    al CLI/compiler/MCP, AL:Go project templates"

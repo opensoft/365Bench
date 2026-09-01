@@ -38,6 +38,12 @@ fi
 node --version
 
 # ----------------------------------------
+# Dynamics 365 / Power Platform / Business Central essentials
+# ----------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/install-business-apps-tools.sh"
+
+# ----------------------------------------
 # PowerShell admin modules (cross-platform, AllUsers scope)
 #   AllUsers installs under /usr/local/share/powershell/Modules so the Layer 3
 #   non-root user can load them (nothing under /root).
@@ -112,4 +118,5 @@ echo "✓ Layer 2 Microsoft 365 Admin Tools Complete"
 echo "=========================================="
 echo "Installed: pwsh 7, Node.js, Microsoft.Graph, Microsoft.Entra,"
 echo "           ExchangeOnlineManagement, MicrosoftTeams, PnP.PowerShell,"
-echo "           m365 CLI, teams CLI, mgc (Graph CLI), az CLI"
+echo "           m365 CLI, teams CLI, mgc (Graph CLI), az CLI,"
+echo "           pac (Power Platform CLI), al (Business Central AL CLI)"
