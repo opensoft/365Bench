@@ -17,7 +17,9 @@ ARCH="$(dpkg --print-architecture 2>/dev/null || echo amd64)"
 if ! command -v pwsh >/dev/null 2>&1; then
     echo "Installing PowerShell 7..."
     . /etc/os-release
-    curl -fsSL "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" -o /tmp/packages-microsoft-prod.deb
+    curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL \
+        "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
+        -o /tmp/packages-microsoft-prod.deb
     dpkg -i /tmp/packages-microsoft-prod.deb
     rm -f /tmp/packages-microsoft-prod.deb
     apt-get update
@@ -31,7 +33,8 @@ pwsh --version
 # ----------------------------------------
 if ! command -v node >/dev/null 2>&1; then
     echo "Installing Node.js LTS..."
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+    curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL \
+        https://deb.nodesource.com/setup_lts.x | bash -
     apt-get install -y nodejs
     rm -rf /var/lib/apt/lists/*
 fi
@@ -73,14 +76,14 @@ pwsh -NoLogo -NoProfile -Command '
 # CLI for Microsoft 365 (cross-platform, npm)
 # ----------------------------------------
 echo "Installing CLI for Microsoft 365 (m365)..."
-npm install -g @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g @pnp/cli-microsoft365)"
+npm install -g --ignore-scripts @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g --ignore-scripts @pnp/cli-microsoft365)"
 command -v m365 >/dev/null 2>&1 && m365 --version || true
 
 # ----------------------------------------
 # Microsoft Teams CLI (teams, preview npm package)
 # ----------------------------------------
 echo "Installing Microsoft Teams CLI (@microsoft/teams.cli@preview)..."
-npm install -g @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g @microsoft/teams.cli@preview)"
+npm install -g --ignore-scripts @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g --ignore-scripts @microsoft/teams.cli@preview)"
 command -v teams >/dev/null 2>&1 && teams --version || true
 
 # ----------------------------------------
@@ -94,7 +97,9 @@ case "$ARCH" in
 esac
 MGC_VERSION="$(curl -s https://api.github.com/repos/microsoftgraph/msgraph-cli/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/' | head -1)"
 if [ -z "$MGC_VERSION" ]; then MGC_VERSION="1.10.0"; fi
-if curl -fL "https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MGC_VERSION}/msgraph-cli-${MGC_ARCH}-v${MGC_VERSION}.tar.gz" -o /tmp/mgc.tar.gz; then
+if curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fL \
+    "https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MGC_VERSION}/msgraph-cli-${MGC_ARCH}-v${MGC_VERSION}.tar.gz" \
+    -o /tmp/mgc.tar.gz; then
     tar -xzf /tmp/mgc.tar.gz -C /usr/local/bin mgc 2>/dev/null || tar -xzf /tmp/mgc.tar.gz -C /usr/local/bin
     rm -f /tmp/mgc.tar.gz
     chmod +x /usr/local/bin/mgc 2>/dev/null || true
@@ -108,7 +113,8 @@ fi
 # ----------------------------------------
 if ! command -v az >/dev/null 2>&1; then
     echo "Installing Azure CLI..."
-    curl -sL https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
+    curl --proto '=https' --proto-redir '=https' --tlsv1.2 -sL \
+        https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
 fi
 command -v az >/dev/null 2>&1 && az version || true
 

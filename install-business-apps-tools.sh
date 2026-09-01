@@ -10,6 +10,17 @@ DOTNET_SHARED_HOME="${DOTNET_CLI_HOME:-/opt/microsoft/dotnet-cli-home}"
 echo "Installing .NET SDKs 8 and 10 (required by AL and PAC)..."
 if ! dotnet --list-sdks 2>/dev/null | grep -q '^8\.' \
     || ! dotnet --list-sdks 2>/dev/null | grep -q '^10\.'; then
+    if ! grep -Rqs 'packages\.microsoft\.com' /etc/apt/sources.list.d 2>/dev/null \
+        && ! grep -qs 'packages\.microsoft\.com' /etc/apt/sources.list 2>/dev/null; then
+        . /etc/os-release
+        microsoft_feed="$(mktemp)"
+        curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --silent --show-error --location --retry 3 \
+            "https://packages.microsoft.com/config/${ID}/${VERSION_ID}/packages-microsoft-prod.deb" \
+            --output "$microsoft_feed"
+        dpkg -i "$microsoft_feed"
+        rm -f "$microsoft_feed"
+    fi
     apt-get -o Acquire::Retries=5 update
     apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
         dotnet-sdk-8.0 \
@@ -25,7 +36,7 @@ export DOTNET_NOLOGO=1
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
 echo "Installing Power Platform CLI (pac)..."
-if [ -x "$DOTNET_TOOL_DIR/pac" ]; then
+if [[ -x "$DOTNET_TOOL_DIR/pac" ]]; then
     dotnet tool update \
         --tool-path "$DOTNET_TOOL_DIR" \
         Microsoft.PowerApps.CLI.Tool
@@ -38,7 +49,7 @@ ln -sf "$DOTNET_TOOL_DIR/pac" /usr/local/bin/pac
 pac help >/dev/null
 
 echo "Installing Business Central AL Development Tools (al)..."
-if [ -x "$DOTNET_TOOL_DIR/al" ]; then
+if [[ -x "$DOTNET_TOOL_DIR/al" ]]; then
     dotnet tool update \
         --tool-path "$DOTNET_TOOL_DIR" \
         Microsoft.Dynamics.BusinessCentral.Development.Tools

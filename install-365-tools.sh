@@ -21,7 +21,8 @@ download() {
 
     temp_output="$(mktemp)"
     for attempt in $(seq 1 "$max_attempts"); do
-        if curl --fail --location --show-error --continue-at - \
+        if curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --location --show-error --continue-at - \
             --retry 3 --retry-delay 5 --retry-all-errors \
             --connect-timeout 30 --speed-limit 1024 --speed-time 120 \
             "$url" -o "$temp_output"; then
@@ -74,8 +75,8 @@ just --version
 # CORE: CSV tools (csvkit via pip; miller via apt above)
 # ----------------------------------------
 echo "Installing csvkit..."
-pip3 install --break-system-packages csvkit 2>/dev/null \
-    || pip3 install csvkit \
+pip3 install --only-binary=:all: --break-system-packages csvkit 2>/dev/null \
+    || pip3 install --only-binary=:all: csvkit \
     || echo "WARNING: csvkit install failed"
 command -v csvstat >/dev/null 2>&1 && csvstat --version || true
 
@@ -160,14 +161,14 @@ pwsh -NoLogo -NoProfile -Command '
 # M365: CLI for Microsoft 365 (m365)
 # ----------------------------------------
 echo "Installing CLI for Microsoft 365 (m365)..."
-npm install -g @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g @pnp/cli-microsoft365)"
+npm install -g --ignore-scripts @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g --ignore-scripts @pnp/cli-microsoft365)"
 command -v m365 >/dev/null 2>&1 && m365 --version || true
 
 # ----------------------------------------
 # M365: Microsoft Teams CLI
 # ----------------------------------------
 echo "Installing Microsoft Teams CLI (@microsoft/teams.cli@preview)..."
-npm install -g @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g @microsoft/teams.cli@preview)"
+npm install -g --ignore-scripts @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g --ignore-scripts @microsoft/teams.cli@preview)"
 command -v teams >/dev/null 2>&1 && teams --version || true
 
 # ----------------------------------------
@@ -196,7 +197,8 @@ fi
 # ----------------------------------------
 if ! command -v az >/dev/null 2>&1; then
     echo "Installing Azure CLI..."
-    curl -sL https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
+    curl --proto '=https' --proto-redir '=https' --tlsv1.2 -sL \
+        https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
 fi
 command -v az >/dev/null 2>&1 && az version || true
 

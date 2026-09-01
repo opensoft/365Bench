@@ -8,7 +8,7 @@
   "containerEnv": {
     "DOCKER_HOST": "unix:///var/run/docker.sock"
   },
-  "initializeCommand": "bash ${localWorkspaceFolder}/../../scripts/prepare-bench-start.sh --container m365-bench --base m365-bench:latest --user ${localEnv:USER} --project sys-benches --service m365-bench",
+  "initializeCommand": "bash -lc 'helper=\"${localWorkspaceFolder}/../../scripts/prepare-bench-start.sh\"; if [[ -x \"$helper\" ]]; then exec \"$helper\" --container m365-bench --base m365-bench:latest --user \"${localEnv:USER}\" --project sys-benches --service m365-bench; else exec \"${localWorkspaceFolder}/build-layer.sh\" --user \"${localEnv:USER}\"; fi'",
   "customizations": {
     "vscode": {
       "extensions": [
