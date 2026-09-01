@@ -1,7 +1,7 @@
-# Layer 2: Microsoft 365 Admin Bench Image
-# Extends Layer 1b (sys-bench-base) with Microsoft 365 business-stack admin tools.
-# Focus: M365 user/tenant administration (Entra ID, Exchange Online, Teams,
-# SharePoint/OneDrive) — NOT Azure infrastructure / AKS.
+# Layer 2: Microsoft Business Applications Bench Image
+# Extends Layer 1b (sys-bench-base) with Microsoft 365, Dynamics 365 CRM /
+# Dataverse, Power Platform, and Business Central administration/development
+# tools. NOT intended for Azure infrastructure / AKS.
 # USER-AGNOSTIC: No user creation — Layer 3 handles user setup.
 
 ARG BASE_IMAGE=sys-bench-base:latest
@@ -10,44 +10,50 @@ FROM ${BASE_IMAGE}
 # Container version labels
 LABEL layer="2"
 LABEL layer.name="m365-bench"
-LABEL layer.version="1.0.0"
-LABEL layer.description="Microsoft 365 business-stack admin tools (user-agnostic)"
-LABEL bench.type="m365-admin"
+LABEL layer.version="2.0.0"
+LABEL layer.description="Microsoft 365 and Dynamics business-app tools (user-agnostic)"
+LABEL bench.type="microsoft-business-apps"
 
 # Everything runs as root
 USER root
+
+ENV DOTNET_CLI_HOME="/opt/microsoft/dotnet-cli-home" \
+    DOTNET_CLI_TELEMETRY_OPTOUT="1" \
+    DOTNET_NOLOGO="1" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # ========================================
 # PREREQUISITES
 # ========================================
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
+    apt-transport-https \
     ca-certificates \
     curl \
-    wget \
-    unzip \
     gnupg \
-    apt-transport-https \
     software-properties-common \
+    unzip \
+    wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# MICROSOFT 365 ADMIN TOOLS (full set)
+# MICROSOFT BUSINESS APPLICATIONS TOOLS (full set)
 # ========================================
-COPY install-365-tools.sh /tmp/
-RUN bash /tmp/install-365-tools.sh && rm /tmp/install-365-tools.sh
+COPY install-365-tools.sh install-business-apps-tools.sh /tmp/
+RUN bash /tmp/install-365-tools.sh \
+    && rm /tmp/install-365-tools.sh /tmp/install-business-apps-tools.sh \
+    && echo '' >> /etc/skel/.zshrc \
+    && echo '# Microsoft business applications aliases' >> /etc/skel/.zshrc \
+    && echo 'alias m365login="m365 login"' >> /etc/skel/.zshrc \
+    && echo 'alias paclogin="pac auth create --deviceCode"' >> /etc/skel/.zshrc \
+    && echo 'alias graphconnect="pwsh -NoLogo -Command Connect-MgGraph"' >> /etc/skel/.zshrc \
+    && echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> /etc/skel/.zshrc
 
 # ========================================
 # SHELL CONFIGURATION (into /etc/skel)
 # ========================================
 # Layer 3's `useradd -m` copies /etc/skel into the user's home, so aliases are
 # user-agnostic (no hardcoded usernames, nothing under /root).
-RUN echo '' >> /etc/skel/.zshrc && \
-    echo '# Microsoft 365 admin aliases' >> /etc/skel/.zshrc && \
-    echo 'alias m365login="m365 login"' >> /etc/skel/.zshrc && \
-    echo 'alias graphconnect="pwsh -NoLogo -Command Connect-MgGraph"' >> /etc/skel/.zshrc && \
-    echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> /etc/skel/.zshrc
-
 # Default command
 CMD ["sleep", "infinity"]

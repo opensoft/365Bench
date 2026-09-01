@@ -27,7 +27,7 @@ mod() {
 }
 
 echo "=========================================="
-echo "Layer 2 Microsoft 365 Bench Test Suite"
+echo "Layer 2 Microsoft Business Applications Bench Test Suite"
 echo "=========================================="
 echo
 
@@ -52,9 +52,19 @@ check "doppler" "doppler --version"
 check "dotnet" "dotnet --version"
 
 echo
-echo "Auth:"
+echo "Auth and Dynamics 365 / Power Platform:"
 check "Azure CLI (az)" "az version"
-echo "  ⚠ pac (Power Platform CLI) — Windows-only, skipped on Linux"
+check "Power Platform CLI (pac)" "pac help"
+check "M365 Power Platform commands" "m365 pp --help"
+check "M365 Power Apps commands" "m365 pa --help"
+check "M365 Power Automate commands" "m365 flow --help"
+
+echo
+echo "Business Central:"
+check ".NET SDK 8" "dotnet --list-sdks | grep -q '^8\\.'"
+check ".NET SDK 10" "dotnet --list-sdks | grep -q '^10\\.'"
+check "AL Development Tools (al)" "al --version"
+check "AL:Go project template" "dotnet new list algo | grep -q 'AL:Go'"
 
 echo
 echo "Compat (PowerShell 7 + modules):"

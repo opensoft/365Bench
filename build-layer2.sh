@@ -1,11 +1,11 @@
 #!/bin/bash
-# Build script for Layer 2: Microsoft 365 Admin Bench Image
+# Build script for Layer 2: Microsoft Business Applications Bench Image
 # Creates: m365-bench:latest
 
 set -e
 
 echo "=========================================="
-echo "Building Layer 2: Microsoft 365 Admin Bench"
+echo "Building Layer 2: Microsoft Business Applications Bench"
 echo "=========================================="
 echo ""
 
@@ -47,7 +47,7 @@ docker build \
     .
 
 echo ""
-echo "✓ Layer 2 (Microsoft 365 Admin) built successfully!"
+echo "✓ Layer 2 (Microsoft Business Applications) built successfully!"
 echo "  Image: m365-bench:latest"
 echo ""
 echo "Layer 3 (user personalization) is handled by"

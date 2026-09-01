@@ -21,7 +21,8 @@ download() {
 
     temp_output="$(mktemp)"
     for attempt in $(seq 1 "$max_attempts"); do
-        if curl --fail --location --show-error --continue-at - \
+        if curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --location --show-error --continue-at - \
             --retry 3 --retry-delay 5 --retry-all-errors \
             --connect-timeout 30 --speed-limit 1024 --speed-time 120 \
             "$url" -o "$temp_output"; then
@@ -74,8 +75,8 @@ just --version
 # CORE: CSV tools (csvkit via pip; miller via apt above)
 # ----------------------------------------
 echo "Installing csvkit..."
-pip3 install --break-system-packages csvkit 2>/dev/null \
-    || pip3 install csvkit \
+pip3 install --only-binary=:all: --break-system-packages csvkit 2>/dev/null \
+    || pip3 install --only-binary=:all: csvkit \
     || echo "WARNING: csvkit install failed"
 command -v csvstat >/dev/null 2>&1 && csvstat --version || true
 
@@ -124,22 +125,13 @@ fi
 pwsh --version
 
 # ----------------------------------------
-# CORE: .NET SDK 8 (required for pac)
+# DYNAMICS: Power Platform CLI + Business Central AL tooling
+# Current PAC releases require .NET 10 while stable AL tools target .NET 8.
+# The helper installs both SDKs, system-wide pac and al commands, and the
+# Business Central AL:Go templates.
 # ----------------------------------------
-if ! command -v dotnet >/dev/null 2>&1; then
-    echo "Installing .NET SDK 8..."
-    . /etc/os-release
-    # packages-microsoft-prod may already be registered from the pwsh step above
-    if ! apt-cache show dotnet-sdk-8.0 >/dev/null 2>&1; then
-        download "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
-            /tmp/packages-microsoft-prod.deb
-        dpkg -i /tmp/packages-microsoft-prod.deb
-        rm -f /tmp/packages-microsoft-prod.deb
-        apt-get -o Acquire::Retries=5 update
-    fi
-    apt-get -o Acquire::Retries=5 install -y dotnet-sdk-8.0 && rm -rf /var/lib/apt/lists/*
-fi
-dotnet --version
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/install-business-apps-tools.sh"
 
 # ----------------------------------------
 # COMPAT: PowerShell admin modules
@@ -169,14 +161,14 @@ pwsh -NoLogo -NoProfile -Command '
 # M365: CLI for Microsoft 365 (m365)
 # ----------------------------------------
 echo "Installing CLI for Microsoft 365 (m365)..."
-npm install -g @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g @pnp/cli-microsoft365)"
+npm install -g --ignore-scripts @pnp/cli-microsoft365 || echo "WARNING: m365 CLI install failed (install manually: npm i -g --ignore-scripts @pnp/cli-microsoft365)"
 command -v m365 >/dev/null 2>&1 && m365 --version || true
 
 # ----------------------------------------
 # M365: Microsoft Teams CLI
 # ----------------------------------------
 echo "Installing Microsoft Teams CLI (@microsoft/teams.cli@preview)..."
-npm install -g @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g @microsoft/teams.cli@preview)"
+npm install -g --ignore-scripts @microsoft/teams.cli@preview || echo "WARNING: Teams CLI install failed (install manually: npm i -g --ignore-scripts @microsoft/teams.cli@preview)"
 command -v teams >/dev/null 2>&1 && teams --version || true
 
 # ----------------------------------------
@@ -200,20 +192,13 @@ else
 fi
 
 # ----------------------------------------
-# AUTH: Power Platform CLI (pac)
-# NOTE: Microsoft.PowerApps.CLI.Tool is Windows-only (no Linux native binary).
-# pac is not available as a standalone Linux install at this time.
-# Install on Windows/macOS: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
-# ----------------------------------------
-echo "NOTE: pac (Power Platform CLI) is Windows-only; skipping on Linux."
-
-# ----------------------------------------
 # AUTH: Azure CLI (az) — verify/install if missing
 # (already in Layer 1b; install only if absent)
 # ----------------------------------------
 if ! command -v az >/dev/null 2>&1; then
     echo "Installing Azure CLI..."
-    curl -sL https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
+    curl --proto '=https' --proto-redir '=https' --tlsv1.2 -sL \
+        https://aka.ms/InstallAzureCLIDeb | bash || echo "WARNING: Azure CLI install failed"
 fi
 command -v az >/dev/null 2>&1 && az version || true
 
@@ -222,10 +207,12 @@ echo "=========================================="
 echo "✓ Layer 2 Microsoft 365 Admin Tools Complete"
 echo "=========================================="
 echo "Core (installed here):"
-echo "  httpie, just, sops, age, doppler, dotnet SDK, csvkit, miller (mlr)"
+echo "  httpie, just, sops, age, doppler, dotnet SDKs 8/10, csvkit, miller (mlr)"
 echo "Core (inherited from base layers):"
 echo "  git, jq, yq, make, node/npm/npx, uv/uvx (MCP runtime), python3/pip"
 echo "Auth:    az CLI, pac (Power Platform CLI)"
 echo "Compat:  pwsh 7, Microsoft.Graph, Microsoft.Entra,"
 echo "         ExchangeOnlineManagement, MicrosoftTeams, PnP.PowerShell"
 echo "M365:    m365 CLI, teams CLI, mgc (Graph CLI)"
+echo "D365:    pac; m365 pp/pa/flow command groups"
+echo "MSBC:    al CLI/compiler/MCP, AL:Go project templates"
