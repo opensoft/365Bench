@@ -2,6 +2,7 @@ name: m365-bench-test
 
 services:
   test:
+    init: true
     image: m365-bench:latest
     command: sleep infinity
     volumes:
