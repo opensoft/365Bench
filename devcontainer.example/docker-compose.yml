@@ -2,6 +2,7 @@ name: sys-benches
 
 services:
   m365-bench:
+    init: true
     image: m365-bench:${USER:-brett}
     container_name: m365-bench
     command: sleep infinity

@@ -2,6 +2,7 @@ name: sys-benches
 
 services:
   m365-bench:
+    init: true
     image: m365-bench:${USER:-brett}
     pull_policy: never
     container_name: m365-bench
